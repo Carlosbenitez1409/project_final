@@ -1,18 +1,50 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Register from "./components/auth/Register";
-import Login from "./components/auth/Login";
+import { AuthProvider } from "./context/AuthContext";
+import Navbar from "./components/Navbar";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import ProductList from "./pages/ProductList";
+import Home from "./pages/Home";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminDashboard from "./pages/Dashboard/AdminDashboard";
+import Users from "./pages/Dashboard/Users";
+import Orders from "./pages/Dashboard/Orders";
+import Products from "./pages/Dashboard/Products";
 
 function App() {
   return (
-    <Router>
-      <div className="h-screen w-full flex flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold text-center"> Bienvenido a la app de comidas</h1>
+    <AuthProvider>
+      <Router>
+        <Navbar />
         <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/productos" element={<ProductList />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route
+            path="/DashBoard"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={<Users />}
+          />
+          <Route
+            path="/admin/products"
+            element={<Products />}
+          />
+          <Route
+            path="/admin/orders"
+            element={<Orders />}  
+          />
         </Routes>
-      </div>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 
