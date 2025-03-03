@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FaBars, FaTimes, FaUserCircle } from "react-icons/fa";
 import SearchBar from "./SearchBar";
@@ -8,8 +8,14 @@ function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [username, setUsername] = useState("");
-
+    const [userRole, setUserRole] = useState("");
     const { selectedProduct, setSelectedProduct } = useSearch();
+    const location = useLocation();
+
+    const isAdminRoute = location.pathname.startsWith("/admin/products") ||
+        location.pathname.startsWith("/admin/orders") ||
+        location.pathname.startsWith("/admin/users") ||
+        location.pathname.startsWith("/dashboard");
 
     useEffect(() => {
         const checkUser = () => {
@@ -17,14 +23,15 @@ function Navbar() {
             if (user) {
                 setIsAuthenticated(true);
                 setUsername(user.name);
+                setUserRole(user.role); 
             } else {
                 setIsAuthenticated(false);
                 setUsername("");
+                setUserRole("");
             }
         };
 
         checkUser();
-
         window.addEventListener("storage", checkUser);
 
         return () => {
@@ -35,20 +42,22 @@ function Navbar() {
     const toggleMenu = () => setMenuOpen(!menuOpen);
 
     const handleLogout = () => {
-        localStorage.removeItem("user");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        resetLocalStorage();
+        alert("Has cerrado sesión");
+    };
 
+    const resetLocalStorage = () => {
+        localStorage.clear();
         setIsAuthenticated(false);
         setUsername("");
-
-        window.dispatchEvent(new Event("storage"));
-        alert("Has cerrado sesión");
+        setUserRole("");
     };
 
     return (
         <>
-            <nav className="fixed top-0 left-0 w-full z-50 bg-white/10 backdrop-blur-md text-white p-4 flex justify-between items-center shadow-md">
+            <nav className={`fixed top-0 left-0 w-full z-50 p-4 flex justify-between items-center shadow-md transition-all
+                ${isAdminRoute ? "bg-black text-white" : "bg-white/10 backdrop-blur-md text-white"}`}>
+
                 <div className="md:hidden">
                     <button onClick={toggleMenu}>
                         {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
@@ -62,6 +71,11 @@ function Navbar() {
                     <li>
                         <Link to="/productos" className="hover:text-gray-300 transition">Productos</Link>
                     </li>
+                    {isAuthenticated && userRole === "admin" && (
+                        <li>
+                            <Link to="/dashboard" className="hover:text-gray-300 transition">Dashboard</Link>
+                        </li>
+                    )}
                 </ul>
 
                 <SearchBar onSelectProduct={setSelectedProduct} />
@@ -90,10 +104,11 @@ function Navbar() {
                     )}
                 </div>
             </nav>
-
             {selectedProduct && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-lg p-4 z-[9999]">
-                    <div className="bg-white/10 backdrop-blur-lg text-white rounded-lg p-6 w-full max-w-md relative shadow-lg">
+                <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-lg p-4 z-[9999]"
+                    onClick={() => setSelectedProduct(null)}>
+                    <div className="bg-white/10 backdrop-blur-lg text-white rounded-lg p-6 w-full max-w-md relative shadow-lg"
+                        onClick={(e) => e.stopPropagation()}>
                         <button
                             className="absolute top-2 right-4 text-gray-300 text-2xl hover:text-gray-500 transition-all"
                             onClick={() => setSelectedProduct(null)}
@@ -102,8 +117,8 @@ function Navbar() {
                         </button>
                         {selectedProduct.image && (
                             <img
-                                src={`http://127.0.0.1:8000${selectedProduct.image}`}
-                                alt={selectedProduct.title}
+                                src={selectedProduct.image}
+                                alt={selectedProduct.name}
                                 className="w-full h-48 object-cover rounded-lg"
                             />
                         )}

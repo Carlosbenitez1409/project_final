@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Api from "../services/Api";
+import fondo from '../assets/fondo.jpg';
 
 function Home() {
     const [products, setProducts] = useState([]);
@@ -24,7 +25,7 @@ function Home() {
 
     return (
         <div className="min-h-screen text-white p-6" style={{
-            backgroundImage: "url('https://img.freepik.com/foto-gratis/arreglo-emojis-dia-mundial-sonrisa_23-2149024494.jpg?t=st=1740625112~exp=1740628712~hmac=332b157deffbd0b0a46199aee0a3d22815178f598385af5f758aecfff29a54a5&w=1380')",
+            backgroundImage: `url(${fondo})`,
             backgroundSize: "cover",
             backgroundPosition: "center"
         }}>
@@ -56,12 +57,12 @@ function Home() {
                 <h2 className="text-3xl font-bold text-center">⭐ Opiniones de Nuestros Clientes</h2>
                 <div className="flex flex-col md:flex-row justify-center gap-6 mt-6">
                     <div className="bg-white p-6 rounded-lg shadow w-80">
-                        <p className="text-gray-600">"La mejor hamburguesa que he probado, se siente fresca y deliciosa."</p>
+                        <p className="text-gray-600">"La mejor hamburguesa que he probado, se siente fresca y deliciosa 10/10."</p>
                         <p className="text-yellow-500 mt-2">⭐⭐⭐⭐⭐</p>
                         <p className="text-gray-800 font-bold mt-2">- Juan Pérez</p>
                     </div>
                     <div className="bg-white p-6 rounded-lg shadow w-80">
-                        <p className="text-gray-600">"Los postres son increíbles, sobre todo el cheesecake. Muy recomendado."</p>
+                        <p className="text-gray-600">"Los Hot Dogs son increíbles, sobre todo el Americano. Muy recomendado."</p>
                         <p className="text-yellow-500 mt-2">⭐⭐⭐⭐⭐</p>
                         <p className="text-gray-800 font-bold mt-2">- Ana López</p>
                     </div>

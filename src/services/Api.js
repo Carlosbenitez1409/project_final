@@ -7,7 +7,6 @@ const Api = axios.create({
     },
 });
 
-//interceptor para agregar el token a cada solicitud
 Api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem("accessToken");
@@ -16,16 +15,20 @@ Api.interceptors.request.use(
         }
         return config;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+        console.error("Error en la solicitud:", error);
+        return Promise.reject(error);
+    }
 );
 
-//interceptor para manejar tokens expirados y refrescarlos
 Api.interceptors.response.use(
-    (response) => response,
+    (response) => response, 
     async (error) => {
         const originalRequest = error.config;
+
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
+
             try {
                 const refreshToken = localStorage.getItem("refreshToken");
 
@@ -40,19 +43,23 @@ Api.interceptors.response.use(
                 });
 
                 localStorage.setItem("accessToken", data.access);
+
                 Api.defaults.headers.Authorization = `Bearer ${data.access}`;
                 originalRequest.headers.Authorization = `Bearer ${data.access}`;
 
-                return Api(originalRequest); //reintenta la petición original con el nuevo token
+                return Api(originalRequest);
+
             } catch (refreshError) {
-                handleLogout(); //si falla el refresh cierra la sesión
+                console.error("Error al refrescar el token:", refreshError);
+                handleLogout(); 
+                return Promise.reject(refreshError);
             }
         }
+
         return Promise.reject(error);
     }
 );
 
-//función para cerrar sesión si el refresh token falla
 const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("accessToken");

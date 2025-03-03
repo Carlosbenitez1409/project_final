@@ -4,7 +4,7 @@ import Api from "../services/Api";
 const useSearch = () => {
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedProduct, setSelectedProduct] = useState(null); 
 
     useEffect(() => {
         const fetchProducts = async () => {

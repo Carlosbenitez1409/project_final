@@ -1,9 +1,9 @@
 import { useState } from "react";
 import useSearch from "../hooks/useSearch";
 
-const SearchBar = ({ onSelectProduct }) => {
+const SearchBar = () => {
     const [query, setQuery] = useState("");
-    const { filteredProducts, searchProducts } = useSearch();
+    const { filteredProducts, searchProducts, setSelectedProduct } = useSearch(); 
 
     const handleSearch = (e) => {
         const value = e.target.value;
@@ -26,7 +26,10 @@ const SearchBar = ({ onSelectProduct }) => {
                         <li
                             key={product.id}
                             className="p-2 hover:bg-gray-200 cursor-pointer"
-                            onClick={() => onSelectProduct(product)}
+                            onClick={() => {
+                                console.log("Producto seleccionado:", product);
+                                setSelectedProduct(product); 
+                            }}
                         >
                             {product.title}
                         </li>
